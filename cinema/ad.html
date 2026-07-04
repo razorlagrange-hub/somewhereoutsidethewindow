@@ -51,19 +51,22 @@
   #videoWrap.show { opacity:1; }
   #videoWrap video { width:100%;height:100%;object-fit:cover; }
 
-  #back {
+  #skipAd {
     position:fixed;
-    bottom:5%;right:5%;
-    color:rgba(255,255,255,0.25);
-    font-size:9px;letter-spacing:0.25em;
+    top:5%;right:3%;
+    color:rgba(255,255,255,0.7);
+    font-size:11px;letter-spacing:0.2em;
     text-transform:uppercase;
     cursor:pointer;z-index:30;
     text-decoration:none;
     font-family:'Courier New',monospace;
     opacity:0;transition:opacity 0.5s,color 0.3s;
+    background:rgba(0,0,0,0.5);
+    padding:8px 14px;
+    border:1px solid rgba(255,255,255,0.25);
   }
-  #back.show { opacity:1; }
-  #back:hover { color:rgba(255,255,255,0.7); }
+  #skipAd.show { opacity:1; }
+  #skipAd:hover { color:#fff; border-color:rgba(255,255,255,0.6); }
 </style>
 </head>
 <body>
@@ -158,7 +161,7 @@
     </video>
   </div>
 
-  <a id="back" href="../hub.html">← hub</a>
+  <a id="skipAd" href="../hub.html">skip ad →</a>
 
 <script>
 (function(){
@@ -169,7 +172,7 @@
   const handset=document.getElementById('handset');
   const videoWrap=document.getElementById('videoWrap');
   const vid=document.getElementById('vid');
-  const back=document.getElementById('back');
+  
 
   let audioCtx=null,t=0;
   let lastBlink=0,blinkState=false,nextBlink=1;
@@ -228,7 +231,7 @@
         vid.volume=0.5;
         vid.play();
         videoWrap.classList.add('show');
-        setTimeout(()=>back.classList.add('show'),4000);
+        setTimeout(()=>document.getElementById('skipAd').classList.add('show'),4000);
       },800);
     });
   },1200);
