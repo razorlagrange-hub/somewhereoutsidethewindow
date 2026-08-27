@@ -138,12 +138,14 @@
   // =============================================
   const LINES = [
     "Welcome to the Hub. I'll appear throughout your visit to provide additional information whenever necessary.",
-    "The cinema section is accessible through the top link.",
     "Navigate using the links around me. Some are not yet available.",
-    "This is the hub. All sections of the site are accessible from here.",
+    "This is the main hub. All sections connect from here.",
     "Some sections are still under construction.",
-    "Return here at any time to navigate to another section.",
-    "Click on any available link to explore.",
+    "Return here at any time.",
+    "I am always available if you need direction.",
+    "The parking section is to the right.",
+    "Not all links lead where you expect.",
+    "Take your time looking around.",
   ];
 
   let lineIndex = 0;
@@ -206,7 +208,7 @@
   // =============================================
   const LINKS = [
     { label:'cinema',         href:'cinema/booth.html', angle:-Math.PI/2 }, // top — LIVE
-    { label:'parking',        href:'parking/park_page1.html', angle:0 }, // right — LIVE
+    { label:'coming soon...', href:'#', angle:0 },            // right
     { label:'coming soon...', href:'#', angle:Math.PI/2 },    // bottom
     { label:'coming soon...', href:'#', angle:Math.PI },      // left
     { label:'???',            href:'#', angle:-Math.PI/4 },   // top-right offset
@@ -340,6 +342,4 @@
   loop();
 })();
 
-</script>
-</body>
-</html>
+</
