@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>NCA - Chair Research Portal</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  background: #d4d0c8;
+  font-family: Arial, sans-serif;
+  font-size: 13px;
+  color: #000;
+  overflow: hidden;
+}
+
+/* PAGE BACKGROUND — looks like a normal 2000s page */
+.page {
+  display: flex;
+  height: 100vh;
+}
+.sidebar {
+  width: 180px;
+  background: #003a7a;
+  padding: 8px 0;
+  flex-shrink: 0;
+}
+.sidebar-item {
+  padding: 6px 12px;
+  color: #fff;
+  font-size: 12px;
+  border-bottom: 1px solid #004a9a;
+  cursor: default;
+}
+.sidebar-item:hover { background: #004a9a; }
+.sidebar-title {
+  background: #002060;
+  color: #ffcc00;
+  font-weight: bold;
+  padding: 10px 12px;
+  font-size: 13px;
+  letter-spacing: 1px;
+}
+.content {
+  flex: 1;
+  overflow: auto;
+  padding: 0;
+}
+.content-inner {
+  padding: 12px 16px;
+  filter: blur(1.5px);
+  user-select: none;
+}
+.top-bar {
+  background: #003a7a;
+  color: #fff;
+  padding: 4px 10px;
+  font-size: 11px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.top-bar a { color: #aaddff; text-decoration: none; margin: 0 6px; }
+.page-title-bar {
+  background: linear-gradient(to right, #003a7a, #0055aa);
+  color: #fff;
+  padding: 10px 16px;
+  font-size: 18px;
+  font-weight: bold;
+  letter-spacing: 1px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.page-title-bar span { font-size: 11px; font-weight: normal; opacity: 0.7; }
+.section-head {
+  background: #003a7a;
+  color: #fff;
+  padding: 4px 10px;
+  font-size: 12px;
+  font-weight: bold;
+  margin: 10px 0 6px 0;
+}
+p { margin: 6px 0; line-height: 1.5; color: #111; }
+table { border-collapse: collapse; width: 100%; margin: 8px 0; font-size: 12px; }
+td, th { border: 1px solid #aaa; padding: 4px 8px; }
+th { background: #003a7a; color: #fff; }
+tr:nth-child(even) td { background: #eeeee8; }
+
+/* =============================================
+   POPUP
+   ============================================= */
+#overlay {
+  position: fixed; top:0; left:0; width:100%; height:100%;
+  background: rgba(0,0,0,0.45);
+  z-index: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#popup {
+  position: relative;
+  width: 480px;
+  box-shadow: 4px 4px 0 #000, 6px 6px 12px rgba(0,0,0,0.5);
+  z-index: 1000;
+  animation: popIn 0.15s ease;
+  cursor: pointer;
+}
+@keyframes popIn {
+  from { transform: scale(0.85); opacity:0; }
+  to   { transform: scale(1);    opacity:1; }
+}
+
+.popup-titlebar {
+  background: linear-gradient(to right, #000066, #0000cc);
+  color: #fff;
+  padding: 4px 8px;
+  font-size: 12px;
+  font-weight: bold;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  user-select: none;
+}
+.popup-close {
+  background: #cc0000;
+  color: #fff;
+  border: 1px solid #ff4444;
+  width: 16px; height: 16px;
+  font-size: 11px;
+  font-weight: bold;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.popup-close:hover { background: #ff0000; }
+
+.popup-body {
+  background: #fff;
+  text-align: center;
+  padding: 0;
+  overflow: hidden;
+}
+
+.popup-header {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  padding: 22px 20px 16px;
+  position: relative;
+  overflow: hidden;
+}
+.popup-header::before {
+  content: '';
+  position: absolute;
+  top: -30px; left: -30px;
+  width: 200px; height: 200px;
+  background: radial-gradient(circle, rgba(200,170,80,0.15), transparent 70%);
+  border-radius: 50%;
+}
+.popup-museum-name {
+  font-family: 'Times New Roman', serif;
+  font-size: 28px;
+  color: #c8a840;
+  letter-spacing: 6px;
+  text-transform: uppercase;
+  font-weight: bold;
+  text-shadow: 0 0 20px rgba(200,168,64,0.4);
+  position: relative;
+}
+.popup-museum-sub {
+  font-family: 'Times New Roman', serif;
+  font-size: 11px;
+  color: rgba(200,168,64,0.65);
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  margin-top: 4px;
+  position: relative;
+}
+.popup-divider {
+  width: 60%; height: 1px;
+  background: linear-gradient(to right, transparent, #c8a840, transparent);
+  margin: 10px auto 0;
+  position: relative;
+}
+
+.popup-content {
+  padding: 16px 22px;
+  background: #faf9f6;
+  border-top: 3px solid #c8a840;
+}
+.popup-tagline {
+  font-family: 'Times New Roman', serif;
+  font-size: 15px;
+  color: #1a1a2e;
+  margin-bottom: 10px;
+  font-style: italic;
+  line-height: 1.4;
+}
+.popup-details {
+  font-size: 11px;
+  color: #555;
+  margin-bottom: 14px;
+  line-height: 1.6;
+}
+.popup-btn {
+  display: inline-block;
+  background: linear-gradient(to bottom, #c8a840, #a07820);
+  color: #fff;
+  font-size: 12px;
+  font-weight: bold;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  padding: 9px 28px;
+  border: 1px solid #8a6010;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.2);
+  text-decoration: none;
+  font-family: Arial, sans-serif;
+  transition: background 0.1s;
+  margin-bottom: 4px;
+}
+.popup-btn:hover {
+  background: linear-gradient(to bottom, #d8b850, #b08830);
+}
+.popup-footer {
+  font-size: 9px;
+  color: #aaa;
+  padding: 6px;
+  background: #f0ede6;
+  border-top: 1px solid #ddd;
+  letter-spacing: 1px;
+}
+
+/* second popup */
+#popup2 {
+  position: fixed;
+  width: 360px;
+  box-shadow: 4px 4px 0 #000;
+  z-index: 1100;
+  display: none;
+  animation: popIn 0.15s ease;
+}
+</style>
+</head>
+<body>
+
+<!-- BLURRED PAGE BEHIND -->
+<div class="page">
+  <div class="sidebar">
+    <div class="sidebar-title">NCA PORTAL</div>
+    <div class="sidebar-item">Home</div>
+    <div class="sidebar-item">Chair Database</div>
+    <div class="sidebar-item">Research Papers</div>
+    <div class="sidebar-item">Field Reports</div>
+    <div class="sidebar-item">Contact</div>
+    <div class="sidebar-item">Members Area</div>
+  </div>
+  <div class="content">
+    <div class="top-bar">
+      <span>National Chair Archive Research Portal &nbsp;|&nbsp; Member Access</span>
+      <span><a href="#">Login</a> <a href="#">Register</a> <a href="#">Help</a></span>
+    </div>
+    <div class="page-title-bar">
+      NCA Research Portal <span>| Database v4.2 | Last updated July 1998</span>
+    </div>
+    <div class="content-inner">
+      <div class="section-head">RECENT DATABASE ENTRIES</div>
+      <table>
+        <tr><th>ID</th><th>Type</th><th>Location</th><th>EM Reading</th><th>Status</th></tr>
+        <tr><td>#1847</td><td>Wicker</td><td>Lyon, FR</td><td>14.7 Hz</td><td>Under review</td></tr>
+        <tr><td>#1846</td><td>Fabric</td><td>Utrecht, NL</td><td>11.2 Hz</td><td>Catalogued</td></tr>
+        <tr><td>#1845</td><td>Polymer</td><td>Malmo, SE</td><td>9.4 Hz</td><td>Catalogued</td></tr>
+        <tr><td>#1844</td><td>Unknown</td><td>[REDACTED]</td><td>[REDACTED]</td><td>Restricted</td></tr>
+      </table>
+      <div class="section-head">ANNOUNCEMENTS</div>
+      <p>The Archive will be closed for internal review from August 3-17, 1998. All pending submissions will be processed upon reopening.</p>
+      <p>Dr. Farlow will present findings at the European Material Sciences Symposium in September. Registration required.</p>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN POPUP -->
+<div id="overlay">
+  <div id="popup" style="position:fixed;">
+    <div class="popup-titlebar">
+      <span>Advertisement</span>
+      <div class="popup-close" onclick="closePopup()">&#x2715;</div>
+    </div>
+    <div class="popup-body" onclick="enterGallery()">
+      <div class="popup-header">
+        <div class="popup-museum-name">The Museum</div>
+        <div class="popup-museum-sub">A Collection</div>
+        <div class="popup-divider"></div>
+      </div>
+      <div class="popup-content">
+        <div class="popup-tagline">"Some things are meant to be seen."</div>
+        <div class="popup-details">
+          Now open to the public.<br>
+          Free admission. No reservation required.<br>
+          Open daily.
+        </div>
+        <div class="popup-btn">Enter</div>
+      </div>
+      <div class="popup-footer">CLICK ANYWHERE TO VISIT &nbsp;·&nbsp; THE MUSEUM &nbsp;·&nbsp; EST. ????</div>
+    </div>
+  </div>
+</div>
+
+<!-- SECOND POPUP after closing first -->
+<div id="popup2">
+  <div class="popup-titlebar" style="background:linear-gradient(to right,#440000,#880000);">
+    <span>Advertisement</span>
+    <div class="popup-close" onclick="enterGallery()">&#x2715;</div>
+  </div>
+  <div class="popup-body" onclick="enterGallery()" style="cursor:pointer;">
+    <div class="popup-header" style="padding:14px 20px 12px;">
+      <div class="popup-museum-name" style="font-size:22px;">The Museum</div>
+      <div class="popup-museum-sub">You should visit.</div>
+    </div>
+    <div class="popup-content" style="padding:12px 22px;">
+      <div class="popup-tagline" style="font-size:13px;">We think you'd enjoy it.</div>
+      <div class="popup-btn" style="font-size:11px;padding:7px 22px;">Enter Now</div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function closePopup(){
+    if(event) event.stopPropagation();
+    // never actually closes — moves popup to random position
+    const p = document.getElementById('popup');
+    const maxX = window.innerWidth  - p.offsetWidth  - 20;
+    const maxY = window.innerHeight - p.offsetHeight - 20;
+    p.style.position = 'fixed';
+    p.style.top  = Math.max(10, Math.random()*maxY) + 'px';
+    p.style.left = Math.max(10, Math.random()*maxX) + 'px';
+    // hide overlay so page is visible but popup stays
+    document.getElementById('overlay').style.background = 'transparent';
+    document.getElementById('overlay').style.pointerEvents = 'none';
+    p.style.pointerEvents = 'all';
+    p.style.zIndex = '2000';
+  }
+
+  function enterGallery(){
+    document.body.style.transition = 'opacity 0.6s';
+    document.body.style.opacity = '0';
+    setTimeout(()=>{ window.location.href = '../gallery/gallery.html'; }, 650);
+  }
+</script>
+
+</body>
+</html>
