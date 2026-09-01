@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>NCA - Chair Research Portal</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  background: #d4d0c8;
+  font-family: Arial, sans-serif;
+  font-size: 13px;
+  color: #000;
+  overflow: hidden;
+}
+
+/* PAGE BACKGROUND — looks like a normal 2000s page */
+.page {
+  display: flex;
+  height: 100vh;
+}
+.sidebar {
+  width: 180px;
+  background: #003a7a;
+  padding: 8px 0;
+  flex-shrink: 0;
+}
+.sidebar-item {
+  padding: 6px 12px;
+  color: #fff;
+  font-size: 12px;
+  border-bottom: 1px solid #004a9a;
+  cursor: default;
+}
+.sidebar-item:hover { background: #004a9a; }
+.sidebar-title {
+  background: #002060;
+  color: #ffcc00;
+  font-weight: bold;
+  padding: 10px 12px;
+  font-size: 13px;
+  letter-spacing: 1px;
+}
+.content {
+  flex: 1;
+  overflow: auto;
+  padding: 0;
+}
+.content-inner {
+  padding: 12px 16px;
+  filter: blur(1.5px);
+  user-select: none;
+  position: relative;
+}
+.top-bar {
+  background: #003a7a;
+  color: #fff;
+  padding: 4px 10px;
+  font-size: 11px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.top-bar a { color: #aaddff; text-decoration: none; margin: 0 6px; }
+.page-title-bar {
+  background: linear-gradient(to right, #003a7a, #0055aa);
+  color: #fff;
+  padding: 10px 16px;
+  font-size: 18px;
+  font-weight: bold;
+  letter-spacing: 1px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.page-title-bar span { font-size: 11px; font-weight: normal; opacity: 0.7; }
+.section-head {
+  background: #003a7a;
+  color: #fff;
+  padding: 4px 10px;
+  font-size: 12px;
+  font-weight: bold;
+  margin: 10px 0 6px 0;
+}
+p { margin: 6px 0; line-height: 1.5; color: #111; }
+table { border-collapse: collapse; width: 100%; margin: 8px 0; font-size: 12px; }
+td, th { border: 1px solid #aaa; padding: 4px 8px; }
+th { background: #003a7a; color: #fff; }
+tr:nth-child(even) td { background: #eeeee8; }
+
+/* =============================================
+   POPUP
+   ============================================= */
+#overlay {
+  position: fixed; top:0; left:0; width:100%; height:100%;
+  background: rgba(0,0,0,0.45);
+  z-index: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#popup {
+  position: relative;
+  width: 480px;
+  box-shadow: 4px 4px 0 #000, 6px 6px 12px rgba(0,0,0,0.5);
+  z-index: 1000;
+  animation: popIn 0.15s ease;
+  cursor: pointer;
+}
+@keyframes popIn {
+  from { transform: scale(0.85); opacity:0; }
+  to   { transform: scale(1);    opacity:1; }
+}
+
+.popup-titlebar {
+  background: linear-gradient(to right, #000066, #0000cc);
+  color: #fff;
+  padding: 4px 8px;
+  font-size: 12px;
+  font-weight: bold;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  user-select: none;
+}
+.popup-close {
+  background: #cc0000;
+  color: #fff;
+  border: 1px solid #ff4444;
+  width: 16px; height: 16px;
+  font-size: 11px;
+  font-weight: bold;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.popup-close:hover { background: #ff0000; }
+
+.popup-body {
+  background: #fff;
+  text-align: center;
+  padding: 0;
+  overflow: hidden;
+}
+
+.popup-header {
+  background: #16213e;
+  padding: 22px 20px 16px;
+  position: relative;
+  overflow: hidden;
+}
+
+.popup-museum-name {
+  font-family: 'Times New Roman', serif;
+  font-size: 28px;
+  color: #c8a840;
+  letter-spacing: 6px;
+  text-transform: uppercase;
+  font-weight: bold;
+  text-shadow: 0 0 20px rgba(200,168,64,0.4);
+  position: relative;
+}
+.popup-museum-sub {
+  font-family: 'Times New Roman', serif;
+  font-size: 11px;
+  color: rgba(200,168,64,0.65);
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  margin-top: 4px;
+  position: relative;
+}
+.popup-divider {
+  width: 60%; height: 1px;
+  background: linear-gradient(to right, transparent, #c8a840, transparent);
+  margin: 10px auto 0;
+  position: relative;
+}
+
+.popup-content {
+  padding: 16px 22px;
+  background: #faf9f6;
+  border-top: 3px solid #c8a840;
+}
+.popup-tagline {
+  font-family: 'Times New Roman', serif;
+  font-size: 15px;
+  color: #1a1a2e;
+  margin-bottom: 10px;
+  font-style: italic;
+  line-height: 1.4;
+}
+.popup-details {
+  font-size: 11px;
+  color: #555;
+  margin-bottom: 14px;
+  line-height: 1.6;
+}
+.popup-btn {
+  display: inline-block;
+  background: linear-gradient(to bottom, #c8a840, #a07820);
+  color: #fff;
+  font-size: 12px;
+  font-weight: bold;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  padding: 9px 28px;
+  border: 1px solid #8a6010;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.2);
+  text-decoration: none;
+  font-family: Arial, sans-serif;
+  transition: background 0.1s;
+  margin-bottom: 4px;
+}
+.popup-btn:hover {
+  background: linear-gradient(to bottom, #d8b850, #b08830);
+}
+.popup-footer {
+  font-size: 9px;
+  color: #aaa;
+  padding: 6px;
+  background: #f0ede6;
+  border-top: 1px solid #ddd;
+  letter-spacing: 1px;
+}
+
+/* second popup */
+#popup2 {
+  position: fixed;
+  width: 360px;
+  box-shadow: 4px 4px 0 #000;
+  z-index: 1100;
+  display: none;
+  animation: popIn 0.15s ease;
+}
+</style>
+</head>
+<body>
+
+<!-- BLURRED PAGE BEHIND -->
+<div class="page">
+  <div class="sidebar">
+    <div class="sidebar-title">NCA PORTAL</div>
+    <div class="sidebar-item">Home</div>
+    <div class="sidebar-item">Chair Database</div>
+    <div class="sidebar-item">Research Papers</div>
+    <div class="sidebar-item">Field Reports</div>
+    <div class="sidebar-item">Contact</div>
+    <div class="sidebar-item">Members Area</div>
+  </div>
+  <div class="content">
+    <div class="top-bar">
+      <span>National Chair Archive Research Portal &nbsp;|&nbsp; Member Access</span>
+      <span><a href="#">Login</a> <a href="#">Register</a> <a href="#">Help</a></span>
+    </div>
+    <div class="page-title-bar">
+      NCA Research Portal <span>| Database v4.2 | Last updated July 1998</span>
+    </div>
+    <div class="content-inner">
+      <div class="section-head">RECENT DATABASE ENTRIES</div>
+      <table>
+        <tr><th>ID</th><th>Type</th><th>Location</th><th>EM Reading</th><th>Status</th></tr>
+        <tr><td>#1847</td><td>Wicker</td><td>Lyon, FR</td><td>14.7 Hz</td><td>Under review</td></tr>
+        <tr><td>#1846</td><td>Fabric</td><td>Utrecht, NL</td><td>11.2 Hz</td><td>Catalogued</td></tr>
+        <tr><td>#1845</td><td>Polymer</td><td>Malmo, SE</td><td>9.4 Hz</td><td>Catalogued</td></tr>
+        <tr><td>#1844</td><td>Unknown</td><td>[REDACTED]</td><td>[REDACTED]</td><td>Restricted</td></tr>
+      </table>
+      <div class="section-head">ANNOUNCEMENTS</div>
+      <p>The Archive will be closed for internal review from August 3-17, 1998. All pending submissions will be processed upon reopening.</p>
+      <p>Dr. Farlow will present findings at the European Material Sciences Symposium in September. Registration required.</p>
+
+      <!-- CHAOS -->
+
+      <!-- tableau qui flotte et tourne -->
+      <table style="position:absolute;top:30px;left:55%;transform:rotate(-4deg) scale(0.9);font-size:11px;border-collapse:collapse;width:260px;border:1px solid #aaa;">
+        <tr><th style="background:#003a7a;color:#fff;padding:3px 6px;">ID</th><th style="background:#003a7a;color:#fff;padding:3px 6px;">Type</th><th style="background:#003a7a;color:#fff;padding:3px 6px;">EM</th></tr>
+        <tr><td style="border:1px solid #aaa;padding:3px 6px;">#1847</td><td style="border:1px solid #aaa;padding:3px 6px;">Wicker</td><td style="border:1px solid #aaa;padding:3px 6px;">14.7 Hz</td></tr>
+        <tr><td style="border:1px solid #aaa;padding:3px 6px;">#1846</td><td style="border:1px solid #aaa;padding:3px 6px;">Fabric</td><td style="border:1px solid #aaa;padding:3px 6px;">11.2 Hz</td></tr>
+        <tr><td style="border:1px solid #aaa;padding:3px 6px;">#1845</td><td style="border:1px solid #aaa;padding:3px 6px;">Polymer</td><td style="border:1px solid #aaa;padding:3px 6px;">9.4 Hz</td></tr>
+      </table>
+
+      <!-- image chaise trop grande qui déborde -->
+      <img src="chair_07.jpg" style="position:absolute;top:-60px;left:-40px;width:340px;transform:rotate(3deg);opacity:0.35;z-index:0;">
+
+      <!-- nav bar dupliquée et écrasée -->
+      <div style="position:absolute;top:90px;left:20%;width:500px;transform:rotate(-1.5deg) scaleY(0.4);background:#800000;padding:4px;text-align:center;font-size:12px;font-family:Arial;font-weight:bold;color:#fff;letter-spacing:1px;">
+        HOME &nbsp;&nbsp; CHAIR CATALOG &nbsp;&nbsp; MAXWELL DEMON THEORY &nbsp;&nbsp; BEHAVIORAL STUDIES &nbsp;&nbsp; CONTACT US
+      </div>
+
+      <!-- même nav encore, décalée -->
+      <div style="position:absolute;top:110px;left:15%;width:500px;transform:rotate(-1.5deg) scaleY(0.4);background:#800000;padding:4px;text-align:center;font-size:12px;font-family:Arial;font-weight:bold;color:#fff;letter-spacing:1px;opacity:0.5;">
+        HOME &nbsp;&nbsp; CHAIR CATALOG &nbsp;&nbsp; MAXWELL DEMON THEORY &nbsp;&nbsp; BEHAVIORAL STUDIES &nbsp;&nbsp; CONTACT US
+      </div>
+
+      <!-- sidebar dupliquée flottante -->
+      <div style="position:absolute;top:160px;right:-60px;width:180px;transform:rotate(2deg);background:#003a7a;padding:8px 0;font-size:12px;font-family:Arial;">
+        <div style="background:#002060;color:#ffcc00;font-weight:bold;padding:8px 12px;font-size:13px;">NCA PORTAL</div>
+        <div style="padding:5px 12px;color:#fff;border-bottom:1px solid #004a9a;">Chair Database</div>
+        <div style="padding:5px 12px;color:#fff;border-bottom:1px solid #004a9a;">Research Papers</div>
+        <div style="padding:5px 12px;color:#fff;">Members Area</div>
+      </div>
+
+      <!-- image chaise étirée horizontalement -->
+      <img src="chair_11.jpg" style="position:absolute;top:280px;left:10%;width:500px;height:60px;object-fit:cover;transform:rotate(0.5deg);opacity:0.4;">
+
+      <!-- header dupliqué et écrasé -->
+      <div style="position:absolute;top:360px;left:-10px;right:-10px;background:#000080;padding:6px;transform:scaleY(0.3) rotate(-0.5deg);transform-origin:top left;">
+        <div style="color:#fff;font-size:28px;font-weight:bold;font-family:Impact;letter-spacing:2px;text-align:center;text-shadow:2px 2px #ff0000;">&#9632; NATIONAL CHAIR ARCHIVE &#9632;</div>
+        <div style="color:#ffff88;font-size:11px;text-align:center;font-family:Arial;">The World's Most Complete Database of Chair Research and Documentation Since 1994</div>
+      </div>
+
+      <!-- grille de chaises dupliquée, trop petite -->
+      <div style="position:absolute;top:420px;left:5%;display:flex;flex-wrap:wrap;gap:3px;width:200px;transform:rotate(-3deg);">
+        <img src="chair_01.jpg" style="width:45px;height:38px;object-fit:cover;border:1px solid #888;opacity:0.6;">
+        <img src="chair_02.jpg" style="width:45px;height:38px;object-fit:cover;border:1px solid #888;opacity:0.6;">
+        <img src="chair_03.jpg" style="width:45px;height:38px;object-fit:cover;border:1px solid #888;opacity:0.6;">
+        <img src="chair_04.jpg" style="width:45px;height:38px;object-fit:cover;border:1px solid #888;opacity:0.6;">
+        <img src="chair_05.jpg" style="width:45px;height:38px;object-fit:cover;border:1px solid #888;opacity:0.6;">
+        <img src="chair_06.jpg" style="width:45px;height:38px;object-fit:cover;border:1px solid #888;opacity:0.6;">
+      </div>
+
+      <!-- footer dupliqué qui flotte au milieu -->
+      <div style="position:absolute;top:500px;left:20%;right:0;background:#000080;color:#fff;font-size:10px;font-family:Arial;text-align:center;padding:5px;transform:rotate(1deg) scaleX(0.8);opacity:0.7;">
+        &copy; 1994-1998 National Chair Archive. All rights reserved.
+      </div>
+
+      <!-- section head répétée décalée -->
+      <div style="position:absolute;top:560px;left:-8px;right:-8px;background:#003a7a;color:#fff;padding:4px 10px;font-size:12px;font-weight:bold;transform:rotate(-0.3deg);">RECENT DATABASE ENTRIES</div>
+      <div style="position:absolute;top:574px;left:4px;right:4px;background:#003a7a;color:#fff;padding:4px 10px;font-size:12px;font-weight:bold;transform:rotate(-0.3deg);opacity:0.4;">RECENT DATABASE ENTRIES</div>
+
+      <!-- image chaise verticale étirée -->
+      <img src="chair_15.jpg" style="position:absolute;top:200px;left:40%;width:80px;height:300px;object-fit:cover;transform:rotate(-2deg);opacity:0.25;">
+
+      <p style="margin-top:700px;">&nbsp;</p>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN POPUP -->
+<div id="overlay">
+  <div id="popup" style="position:fixed;">
+    <div class="popup-titlebar">
+      <span>Advertisement</span>
+      <div class="popup-close" onclick="closePopup()">&#x2715;</div>
+    </div>
+    <div class="popup-body" onclick="enterGallery()">
+      <div class="popup-header">
+        <div class="popup-museum-name">The Museum</div>
+        <div class="popup-museum-sub">A Collection</div>
+        <div class="popup-divider"></div>
+      </div>
+      <div class="popup-content">
+        <div class="popup-tagline">"Some things are meant to be seen."</div>
+        <div class="popup-details">
+          Now open to the public.<br>
+          Free admission. No reservation required.<br>
+          Open daily.
+        </div>
+        <div class="popup-btn">Enter</div>
+      </div>
+      <div class="popup-footer">CLICK ANYWHERE TO VISIT &nbsp;·&nbsp; THE MUSEUM</div>
+    </div>
+  </div>
+</div>
+
+<!-- SECOND POPUP after closing first -->
+<div id="popup2">
+  <div class="popup-titlebar" style="background:linear-gradient(to right,#440000,#880000);">
+    <span>Advertisement</span>
+    <div class="popup-close" onclick="enterGallery()">&#x2715;</div>
+  </div>
+  <div class="popup-body" onclick="enterGallery()" style="cursor:pointer;">
+    <div class="popup-header" style="padding:14px 20px 12px;">
+      <div class="popup-museum-name" style="font-size:22px;">The Museum</div>
+      <div class="popup-museum-sub">You should visit.</div>
+    </div>
+    <div class="popup-content" style="padding:12px 22px;">
+      <div class="popup-tagline" style="font-size:13px;">We think you'd enjoy it.</div>
+      <div class="popup-btn" style="font-size:11px;padding:7px 22px;">Enter Now</div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function closePopup(){
+    if(event) event.stopPropagation();
+    // never actually closes — moves popup to random position
+    const p = document.getElementById('popup');
+    const maxX = window.innerWidth  - p.offsetWidth  - 20;
+    const maxY = window.innerHeight - p.offsetHeight - 20;
+    p.style.position = 'fixed';
+    p.style.top  = Math.max(10, Math.random()*maxY) + 'px';
+    p.style.left = Math.max(10, Math.random()*maxX) + 'px';
+    // hide overlay so page is visible but popup stays
+    document.getElementById('overlay').style.background = 'transparent';
+    document.getElementById('overlay').style.pointerEvents = 'none';
+    p.style.pointerEvents = 'all';
+    p.style.zIndex = '2000';
+  }
+
+  function enterGallery(){
+    document.body.style.transition = 'opacity 0.6s';
+    document.body.style.opacity = '0';
+    setTimeout(()=>{ window.location.href = 'gallery.html'; }, 650);
+  }
+</script>
+
+</body>
+</html>
